@@ -1,0 +1,135 @@
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Left Panel: Command History -->
+            <aside class="panel left-panel">
+                <div class="panel-header">
+                    <h3>🌸 SWEET MEMORIES</h3>
+                    <button id="refresh-history-btn" class="icon-btn" title="Refresh History">🔄</button>
+                </div>
+                <div id="history-feed" class="history-feed">
+                    <div class="empty-state">No commands executed yet.</div>
+                </div>
+            </aside>
+
+            <!-- Center Stage -->
+            <section class="center-stage mobile-active">
+                <!-- Interactive Anime Avatar -->
+                <div class="avatar-stage" id="avatar-stage" title="Click Love.AI to interact! 💖">
+                    <div class="avatar-ambient-glow"></div>
+                    <div class="avatar-card-frame" id="avatar-card-frame">
+                        <img id="avatar-img" src="/static/avatar/hinata_love.png" alt="Love.AI" class="hinata-avatar mood-love" />
+                        <div class="floating-hearts-overlay" id="hearts-container"></div>
+                        <div class="avatar-badge-tag">💖 LOVE.AI</div>
+                    </div>
+                </div>
+
+                <!-- Three.js Canvas -->
+                <div id="canvas-container" class="canvas-container hidden-canvas"></div>
+
+                <!-- Quick Action Grid -->
+                <div class="quick-actions-grid" id="quick-actions-grid">
+                    <button class="quick-action-btn" data-action="news" title="আজকের খবর">
+                        <span class="qa-icon">📰</span>
+                        <span class="qa-label">খবর</span>
+                    </button>
+                    <button class="quick-action-btn" data-action="search" title="গুগলে সার্চ">
+                        <span class="qa-icon">🔍</span>
+                        <span class="qa-label">সার্চ</span>
+                    </button>
+                    <button class="quick-action-btn" data-action="youtube" title="ইউটিউব খোলো">
+                        <span class="qa-icon">▶️</span>
+                        <span class="qa-label">YouTube</span>
+                    </button>
+                    <button class="quick-action-btn" data-action="facebook" title="ফেসবুক খোলো">
+                        <span class="qa-icon">📱</span>
+                        <span class="qa-label">Facebook</span>
+                    </button>
+                    <button class="quick-action-btn" data-action="code" title="পাইথন কোড লিখো">
+                        <span class="qa-icon">💻</span>
+                        <span class="qa-label">কোড</span>
+                    </button>
+                    <button class="quick-action-btn" data-action="screenshot" title="স্ক্রিনশট নাও">
+                        <span class="qa-icon">📷</span>
+                        <span class="qa-label">Screenshot</span>
+                    </button>
+                </div>
+
+                <!-- Status Pill + Typing Indicator -->
+                <div class="assistant-status-container">
+                    <div id="status-pill" class="status-pill state-idle">
+                        <span class="dot"></span>
+                        <span id="status-text">LOVE.AI READY</span>
+                    </div>
+                    <div id="typing-indicator" class="typing-indicator hidden">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-label">হিনাতা ভাবছে...</span>
+                    </div>
+                </div>
+
+                <!-- Chat Box -->
+                <div class="chat-container" id="chat-container">
+                    <div class="chat-header-bar">
+                        <span class="chat-title">🌸 LOVE.AI CHAT</span>
+                        <button id="clear-chat-btn" class="clear-chat-btn" title="Clear Chat">🗑️ Clear</button>
+                    </div>
+                    <div id="chat-stream" class="chat-stream">
+                        <div class="chat-bubble hinata-bubble">
+                            <div class="bubble-tag">🌸 LOVE.AI</div>
+                            <div class="bubble-content">
+                                <p>আমি তোমার জন্য প্রস্তুত বাবু! কি করতে হবে বলো? কোড লেখা, সফটওয়্যার ওপেন, সার্চ বা ভালোবাসার গল্প—সব আমি করব! 💖</p>
+                            </div>
+                            <div class="bubble-time">Just now</div>
+                        </div>
+                    </div>
+                    <div id="live-transcript" class="live-transcript">"মাইক চাপুন বা কিবোর্ডে Spacebar চেপে বলুন..."</div>
+                </div>
+
+                <!-- Voice Controls with Audio Visualizer -->
+                <div class="voice-controls">
+                    <div class="audio-visualizer" id="audio-visualizer">
+                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                        <div class="eq-bar"></div><div class="eq-bar"></div>
+                    </div>
+                    <button id="mic-btn" class="mic-button" title="Push to Talk (Spacebar)">
+                        <div class="mic-wave-ring"></div>
+                        <svg class="mic-icon" viewBox="0 0 24 24" width="28" height="28">
+                            <path fill="currentColor" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path fill="currentColor" d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                    </button>
+                    <form id="text-form" class="text-input-bar">
+                        <input id="text-input" type="text" placeholder="বলুন বা লিখুন... (e.g. 'খবর শোনাও', 'open chrome')" autocomplete="off"/>
+                        <button type="submit" class="send-btn">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                    </form>
+                    <div class="audio-visualizer" id="audio-visualizer-right">
+                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                        <div class="eq-bar"></div><div class="eq-bar"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: System Logs -->
+            <aside class="panel right-panel">
+                <div class="panel-header">
+                    <h3>SYSTEM LOGS</h3>
+                    <span class="live-tag">LIVE</span>
+                </div>
+                <div id="terminal-logs" class="terminal-logs">
+                    <div class="log-line info">[INIT] System core loaded.</div>
+                    <div class="log-line info">[SYS] PyAutoGUI active.</div>
+                    <div class="log-line success">[TTS] Cartesia audio stream linked.</div>
+                </div>
+                <div class="system-card">
+                    <h4>HOST MACHINE</h4>
+                    <div class="sys-stat-row"><span>OS:</span><span id="host-os">Windows</span></div>
+                    <div class="sys-stat-row"><span>Resolution:</span><span id="screen-res">-- x --</span></div>
+                    <div class="sys-stat-row"><span>Audio:</span><span>Cartesia Web Audio</span></div>
+                </div>
+            </aside>
+        </main>

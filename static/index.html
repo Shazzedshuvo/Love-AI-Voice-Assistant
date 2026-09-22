@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOVE.AI // Romantic AI Companion & Voice Assistant</title>
+    <meta name="description" content="LOVE.AI - Your romantic anime waifu AI companion with voice control, live news, and desktop automation. Created by sazzadShuvo.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Quicksand:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <!-- Ambient Background Effects -->
+    <div class="cyber-grid"></div>
+    <div class="ambient-glow"></div>
+    <div id="sakura-container" class="sakura-container"></div>
+
+    <div class="app-container">
+        <!-- Top Status Header -->
+        <header class="top-bar">
+            <div class="brand">
+                <div class="pulse-indicator pulse-pink"></div>
+                <h1 class="logo-text">LOVE<span>.AI</span></h1>
+                <span class="badge badge-anime">🌸 WAIFU COMPANION</span>
+            </div>
+
+            <div class="system-telemetry">
+                <div class="tele-item">
+                    <span class="label">VOICE</span>
+                    <select id="voice-persona-select" class="hud-select">
+                        <option value="hinata_sweet" selected>🌸 Hinata Soft</option>
+                        <option value="cute_princess">👑 Aurora Princess</option>
+                        <option value="romantic_waifu">💖 Romantic Waifu</option>
+                        <option value="gemini_fast">⚡ Gemini Fast</option>
+                    </select>
+                </div>
+                <div class="tele-item">
+                    <span class="label">MOOD</span>
+                    <select id="avatar-mood-select" class="hud-select">
+                        <option value="love" selected>💖 Romantic</option>
+                        <option value="blush">😳 Shy</option>
+                        <option value="normal">✨ Energetic</option>
+                    </select>
+                </div>
+                <div class="tele-item">
+                    <span class="label">LANGUAGE</span>
+                    <select id="language-select" class="hud-select">
+                        <option value="bn-BD" selected>🇧🇩 বাংলা</option>
+                        <option value="en-US">🇺🇸 English</option>
+                    </select>
+                </div>
+                <div class="tele-item">
+                    <span class="label">STATUS</span>
+                    <span id="ws-status" class="val status-connecting">CONNECTING...</span>
+                </div>
+                <div class="tele-item">
+                    <span class="label">DATABASE</span>
+                    <span id="db-status" class="val status-ok">MONGODB</span>
+                </div>
+                <div class="tele-item">
+                    <button id="always-listen-btn" class="hud-action-btn active-wake" title="Toggle 24/7 Wake Word">🎙️ WAKE ON</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Breaking News Live Alert Banner -->
+        <div id="breaking-news-banner" class="breaking-news-banner hidden-banner">
+            <div class="breaking-badge">🚨 ব্রেকিং</div>
+            <div class="breaking-content">
+                <span id="breaking-news-title" class="breaking-title">...</span>
+                <span id="breaking-news-source" class="breaking-source"></span>
+            </div>
+            <a id="breaking-news-link" href="#" target="_blank" class="breaking-link-btn">বিস্তারিত ↗</a>
+            <button id="close-breaking-btn" class="close-breaking-btn" title="Dismiss">✕</button>
+        </div>
+
+        <!-- Mobile Navigation Tabs -->
+        <nav class="mobile-nav" id="mobile-nav">
+            <button class="mobile-nav-btn active" data-target="center-stage">
+                <span class="icon">🌸</span><span class="text">LOVE.AI</span>
+            </button>
+            <button class="mobile-nav-btn" data-target="left-panel">
+                <span class="icon">📜</span><span class="text">History</span>
+            </button>
+            <button class="mobile-nav-btn" data-target="right-panel">
+                <span class="icon">⚡</span><span class="text">Logs</span>
+            </button>
+        </nav>
+
+                <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Left Panel: Command History -->
+            <aside class="panel left-panel">
+                <div class="panel-header">
+                    <h3>🌸 SWEET MEMORIES</h3>
+                    <button id="refresh-history-btn" class="icon-btn" title="Refresh History">🔄</button>
+                </div>
+                <div id="history-feed" class="history-feed">
+                    <div class="empty-state">No commands executed yet.</div>
+                </div>
+            </aside>
+
+            <!-- Center Stage -->
+            <section class="center-stage mobile-active">
+                <!-- Interactive Anime Avatar -->
+                <div class="avatar-stage" id="avatar-stage" title="Click Love.AI to interact! 💖">
+                    <div class="avatar-ambient-glow"></div>
+                    <div class="avatar-card-frame" id="avatar-card-frame">
+                        <img id="avatar-img" src="/static/avatar/hinata_love.png" alt="Love.AI" class="hinata-avatar mood-love" />
+                        <div class="floating-hearts-overlay" id="hearts-container"></div>
+                        <div class="avatar-badge-tag">💖 LOVE.AI</div>
+                    </div>
+                </div>
+
+                <!-- Three.js Canvas -->
+                <div id="canvas-container" class="canvas-container hidden-canvas"></div>
+
+                <!-- Quick Action Grid -->
+                <div class="quick-actions-grid" id="quick-actions-grid">
+                    <button class="quick-action-btn" data-action="news" title="আজকের খবর">
+                        <span class="qa-icon">📰</span>
+                        <span class="qa-label">খবর</span>
+                    </button>
+                    <button class="quick-action-btn" data-action="search" title="গুগলে সার্চ">
+                        <span class="qa-icon">🔍</span>
+                        <span class="qa-label">সার্চ</span>
+                    </button>
+                    <button class="quick-action-btn" data-action="youtube" title="ইউটিউব খোলো">
+                        <span class="qa-icon">▶️</span>
+                        <span class="qa-label">YouTube</span>
+                    </button>
+                    <button class="quick-action-btn" data-action="facebook" title="ফেসবুক খোলো">
+                        <span class="qa-icon">📱</span>
+                        <span class="qa-label">Facebook</span>
+                    </button>
+                    <button class="quick-action-btn" data-action="code" title="পাইথন কোড লিখো">
+                        <span class="qa-icon">💻</span>
+                        <span class="qa-label">কোড</span>
+                    </button>
+                    <button class="quick-action-btn" data-action="screenshot" title="স্ক্রিনশট নাও">
+                        <span class="qa-icon">📷</span>
+                        <span class="qa-label">Screenshot</span>
+                    </button>
+                </div>
+
+                <!-- Status Pill + Typing Indicator -->
+                <div class="assistant-status-container">
+                    <div id="status-pill" class="status-pill state-idle">
+                        <span class="dot"></span>
+                        <span id="status-text">LOVE.AI READY</span>
+                    </div>
+                    <div id="typing-indicator" class="typing-indicator hidden">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-label">হিনাতা ভাবছে...</span>
+                    </div>
+                </div>
+
+                <!-- Chat Box -->
+                <div class="chat-container" id="chat-container">
+                    <div class="chat-header-bar">
+                        <span class="chat-title">🌸 LOVE.AI CHAT</span>
+                        <button id="clear-chat-btn" class="clear-chat-btn" title="Clear Chat">🗑️ Clear</button>
+                    </div>
+                    <div id="chat-stream" class="chat-stream">
+                        <div class="chat-bubble hinata-bubble">
+                            <div class="bubble-tag">🌸 LOVE.AI</div>
+                            <div class="bubble-content">
+                                <p>আমি তোমার জন্য প্রস্তুত বাবু! কি করতে হবে বলো? কোড লেখা, সফটওয়্যার ওপেন, সার্চ বা ভালোবাসার গল্প—সব আমি করব! 💖</p>
+                            </div>
+                            <div class="bubble-time">Just now</div>
+                        </div>
+                    </div>
+                    <div id="live-transcript" class="live-transcript">"মাইক চাপুন বা কিবোর্ডে Spacebar চেপে বলুন..."</div>
+                </div>
+
+                <!-- Voice Controls with Audio Visualizer -->
+                <div class="voice-controls">
+                    <div class="audio-visualizer" id="audio-visualizer">
+                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                        <div class="eq-bar"></div><div class="eq-bar"></div>
+                    </div>
+                    <button id="mic-btn" class="mic-button" title="Push to Talk (Spacebar)">
+                        <div class="mic-wave-ring"></div>
+                        <svg class="mic-icon" viewBox="0 0 24 24" width="28" height="28">
+                            <path fill="currentColor" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path fill="currentColor" d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                    </button>
+                    <form id="text-form" class="text-input-bar">
+                        <input id="text-input" type="text" placeholder="বলুন বা লিখুন... (e.g. 'খবর শোনাও', 'open chrome')" autocomplete="off"/>
+                        <button type="submit" class="send-btn">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                    </form>
+                    <div class="audio-visualizer" id="audio-visualizer-right">
+                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                        <div class="eq-bar"></div><div class="eq-bar"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: System Logs -->
+            <aside class="panel right-panel">
+                <div class="panel-header">
+                    <h3>SYSTEM LOGS</h3>
+                    <span class="live-tag">LIVE</span>
+                </div>
+                
+                <!-- Telemetry Gauges -->
+                <div class="telemetry-gauges sci-fi-gauges" style="display: flex; justify-content: space-around; margin: 10px 0;">
+                    <div class="gauge-container" style="position: relative; width: 80px; height: 80px;">
+                        <svg class="circular-gauge" viewBox="0 0 100 100" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                            <circle class="gauge-bg" cx="50" cy="50" r="40" style="fill: none; stroke: rgba(0, 242, 254, 0.2); stroke-width: 8;"></circle>
+                            <circle class="gauge-val cpu-val" cx="50" cy="50" r="40" style="fill: none; stroke: #00f2fe; stroke-width: 8; stroke-dasharray: 251.2; stroke-dashoffset: 251.2; stroke-linecap: round; transition: stroke-dashoffset 0.5s ease;"></circle>
+                        </svg>
+                        <div class="gauge-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; font-family: 'Orbitron', sans-serif;">
+                            <span class="gauge-label" style="display: block; font-size: 0.6rem; color: #8892b0;">CPU</span>
+                            <span class="gauge-value" id="cpu-value" style="display: block; font-size: 0.9rem; color: #fff; font-weight: bold;">0%</span>
+                        </div>
+                    </div>
+                    <div class="gauge-container" style="position: relative; width: 80px; height: 80px;">
+                        <svg class="circular-gauge" viewBox="0 0 100 100" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                            <circle class="gauge-bg" cx="50" cy="50" r="40" style="fill: none; stroke: rgba(0, 242, 254, 0.2); stroke-width: 8;"></circle>
+                            <circle class="gauge-val ram-val" cx="50" cy="50" r="40" style="fill: none; stroke: #4facfe; stroke-width: 8; stroke-dasharray: 251.2; stroke-dashoffset: 251.2; stroke-linecap: round; transition: stroke-dashoffset 0.5s ease;"></circle>
+                        </svg>
+                        <div class="gauge-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; font-family: 'Orbitron', sans-serif;">
+                            <span class="gauge-label" style="display: block; font-size: 0.6rem; color: #8892b0;">RAM</span>
+                            <span class="gauge-value" id="ram-value" style="display: block; font-size: 0.9rem; color: #fff; font-weight: bold;">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="terminal-logs" class="terminal-logs">
+                    <div class="log-line info">[INIT] System core loaded.</div>
+                    <div class="log-line info">[SYS] PyAutoGUI active.</div>
+                    <div class="log-line success">[TTS] Cartesia audio stream linked.</div>
+                </div>
+                <div class="system-card">
+                    <h4>HOST MACHINE</h4>
+                    <div class="sys-stat-row"><span>OS:</span><span id="host-os">Windows</span></div>
+                    <div class="sys-stat-row"><span>Resolution:</span><span id="screen-res">-- x --</span></div>
+                    <div class="sys-stat-row"><span>Audio:</span><span>Cartesia Web Audio</span></div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- News Modal Overlay -->
+        <div id="news-modal" class="news-modal hidden">
+            <div class="news-modal-backdrop" id="news-modal-backdrop"></div>
+            <div class="news-modal-content">
+                <div class="news-modal-header">
+                    <h2 id="news-modal-title">📰 বাংলাদেশের সংবাদ</h2>
+                    <button id="news-modal-close" class="news-modal-close-btn">✕</button>
+                </div>
+                <div class="news-modal-tabs" id="news-modal-tabs">
+                    <button class="news-tab active" data-cat="all">সকল</button>
+                    <button class="news-tab" data-cat="national">জাতীয়</button>
+                    <button class="news-tab" data-cat="international">আন্তর্জাতিক</button>
+                    <button class="news-tab" data-cat="sports">খেলাধুলা</button>
+                    <button class="news-tab" data-cat="tech">প্রযুক্তি</button>
+                </div>
+                <div class="news-cards-container" id="news-cards-container">
+                    <div class="news-loading">
+                        <div class="news-loading-spinner"></div>
+                        <span>খবর লোড হচ্ছে...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden elements for assistant bubble compatibility -->
+    <div id="assistant-bubble" class="hidden"><p id="assistant-text"></p></div>
+    <button id="quick-news-btn" class="hidden"></button>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
