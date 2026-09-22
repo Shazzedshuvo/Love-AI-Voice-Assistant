@@ -16,7 +16,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
-import pyautogui
+try:
+    import pyautogui
+    HAS_DESKTOP = True
+except Exception:
+    pyautogui = None
+    HAS_DESKTOP = False
 
 # Optional LLM libraries with graceful fallback
 try:
@@ -106,8 +111,9 @@ os.makedirs("static", exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # PyAutoGUI Safety settings
-pyautogui.FAILSAFE = False
-pyautogui.PAUSE = 0.1
+if HAS_DESKTOP:
+    pyautogui.FAILSAFE = False
+    pyautogui.PAUSE = 0.1
 
 # -------------------------------------------------------------
 # MongoDB Async Database Handler (Motor)
@@ -568,6 +574,7 @@ Next
     @staticmethod
     async def press_keys(keys: List[str]) -> str:
         """Simulates key presses or hotkeys (e.g. ['ctrl', 'c'], ['win', 'd'], ['alt', 'tab'], ['enter'])."""
+        if not HAS_DESKTOP: return "Desktop automation disabled in cloud."
         try:
             if len(keys) == 1:
                 pyautogui.press(keys[0])
@@ -580,6 +587,7 @@ Next
     @staticmethod
     async def type_text(text: str, press_enter: bool = False) -> str:
         """Types text into the active window."""
+        if not HAS_DESKTOP: return "Desktop automation disabled in cloud."
         try:
             pyautogui.write(text, interval=0.03)
             if press_enter:
@@ -591,6 +599,7 @@ Next
     @staticmethod
     async def mouse_click(x: Optional[int] = None, y: Optional[int] = None, button: str = "left", clicks: int = 1) -> str:
         """Clicks or moves the mouse at coordinates or current position."""
+        if not HAS_DESKTOP: return "Desktop automation disabled in cloud."
         try:
             if x is not None and y is not None:
                 pyautogui.click(x=x, y=y, button=button, clicks=clicks)
@@ -604,6 +613,7 @@ Next
     @staticmethod
     async def take_screenshot() -> str:
         """Takes a full screen screenshot and opens the image preview."""
+        if not HAS_DESKTOP: return "Desktop automation disabled in cloud."
         try:
             screenshot_path = os.path.abspath("static/latest_screenshot.png")
             img = pyautogui.screenshot()
@@ -621,8 +631,12 @@ Next
     async def get_system_status() -> Dict[str, Any]:
         """Gathers system telemetry."""
         import psutil
-        screen_size = pyautogui.size()
-        cursor_pos = pyautogui.position()
+        if HAS_DESKTOP:
+            screen_size = pyautogui.size()
+            cursor_pos = pyautogui.position()
+        else:
+            screen_size = type('obj', (object,), {'width': 1920, 'height': 1080})
+            cursor_pos = type('obj', (object,), {'x': 0, 'y': 0})
         return {
             "os": f"{platform.system()} {platform.release()}",
             "screen_width": screen_size.width,
